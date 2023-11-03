@@ -1,15 +1,15 @@
-import telebot
+#import telebot
 import json
 import time
 import requests
 
 #необходимо указать токен своего бота, созданного через Botfather
-bot = telebot.TeleBot('TOKEN')
+#bot = telebot.TeleBot('TOKEN')
 
-
+filename = "articles.json"
 while True:
     
-    with open('articles.json', 'r', encoding='utf-8') as read_art:
+    with open(filename, encoding='utf-8') as read_art:
         articles = json.load(read_art)
 
     for elem in articles:
@@ -20,7 +20,7 @@ while True:
         
         title = text.get('data').get('products')[0].get('name')
         price = text.get('data').get('products')[0].get('salePriceU')//100
-        average_price = text.get('data').get('products')[0].get('averagePrice')//100
+        average_price = text.get('data').get('products')[0].get('averagePrice', 0)//100
         benefit = text.get('data').get('products')[0].get('benefit')
         
         with open ('prices.json', 'r', encoding='utf-8') as read_test:
@@ -39,5 +39,5 @@ while True:
                 
         with open('prices.json', 'w', encoding='utf-8') as write_test:
             json.dump(dict, write_test, ensure_ascii=False)
-        
+        print("Gone sleep")
         time.sleep(420)
