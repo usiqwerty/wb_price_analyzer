@@ -27,9 +27,7 @@ while True:
             dict = json.load(read_test)
             if dict.get(title):
                 if dict[title] > price:
-                    # на данный момент информация о снижении цены публикуется в канале с id -1001881473314 ( https://t.me/pupperprices ), 
-                    # можно заменить на любой другой, в том числе и просто себе в личку 
-                    bot.send_message('-1001881473314', f'Товар {title} подешевел на {dict[title] - price} рублей. \n'
+                    print(f'Товар {title} подешевел на {dict[title] - price} рублей. \n'
                                                        f'Актуальная цена: {price}.\n'
                                                        f'Средняя цена на данный товар на ВБ: {average_price}\n'
                                                        f'Выгода: {benefit}%\n'
