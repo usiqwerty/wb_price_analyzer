@@ -7,10 +7,14 @@ import requests
 #bot = telebot.TeleBot('TOKEN')
 
 filename = "articles.json"
-while True:
-    
+try:
     with open(filename, encoding='utf-8') as read_art:
         articles = json.load(read_art)
+except:
+    articles = []
+while True:
+    
+
 
     for elem in articles:
         url = 'https://card.wb.ru/cards/detail?spp=27&nm='
