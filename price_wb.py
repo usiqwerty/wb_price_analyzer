@@ -8,48 +8,47 @@ import requests
 
 filename_articles = "articles.json"
 filename_prices = "prices.json"
-try:
-    with open(filename_articles, encoding='utf-8') as read_art:
-        articles = json.load(read_art)
-except:
-    articles = []
-
-try:
-    with open(filename_prices, 'r', encoding='utf-8') as read_test:
-        prices = json.load(read_test)
-except:
-    prices = {}
+def load_from_file(filename):
+    try:
+        with open(filename, encoding='utf-8') as f:
+            data = json.load(f)
+    except:
+        data = None
+    return data
 
 def mainloop():
-    while True:
-        for elem in articles:
-            url = 'https://card.wb.ru/cards/detail?spp=27&nm='
-            r = requests.get(f"{url}{elem}").content
+    if not articles:
+        print(f"Empty articles list. Fill {filename_articles}")
+    while articles:
+        for article in articles:
+            url = f'https://card.wb.ru/cards/detail?spp=27&nm={article}'
 
-            text = json.loads(r)
+            response = requests.get(url)
+            if response.status_code != 200:
+                print(response)
+                break
+            response_json = response.json()
+            products = response_json['data']['products']
 
-            title = text.get('data').get('products')[0].get('name')
-            price = text.get('data').get('products')[0].get('salePriceU')//100
-            average_price = text.get('data').get('products')[0].get('averagePrice', 0)//100
-            benefit = text.get('data').get('products')[0].get('benefit')
+            product = products[0]
+            title = product['name']
+            brand = product['brand']
+            price = product['salePriceU'] / 100
 
-            if prices.get(title):
-                if prices[title] > price:
-                    print(f'Товар {title} подешевел на {prices[title] - price} рублей. \n'
-                                                       f'Актуальная цена: {price}.\n'
-                                                       f'Средняя цена на данный товар на ВБ: {average_price}\n'
-                                                       f'Выгода: {benefit}%\n'
-                                                       f'Ссылка на товар: https://www.wildberries.ru/catalog/{elem}/detail.aspx')
-                    prices[title] = price
-            else:
-                prices[title] = price
+            if title in prices:
+                    print(f'Товар "{title}" (от {brand}) подешевел на {prices[title] - price} рублей.\n'
+                          f'Ссылка на товар: https://www.wildberries.ru/catalog/{article}/detail.aspx')
+            prices[title] = price
 
             print("Gone sleep")
             time.sleep(420)
 
+
+articles = load_from_file(filename_articles) or []
+prices = load_from_file(filename_prices) or {}
 try:
     mainloop()
 except KeyboardInterrupt:
-    pass
+    print("Stopped by keyboard")
 with open(filename_prices, 'w', encoding='utf-8') as write_test:
     json.dump(prices, write_test, ensure_ascii=False)

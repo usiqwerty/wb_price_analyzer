@@ -2,12 +2,12 @@ import telebot
 import json
 import time
 import requests
-
+filename = "articles.json"
 #необходимо указать токен своего бота, созданного через Botfather
 bot = telebot.TeleBot('TOKEN')
 
 def delete_art(art_del, message):
-    with open('articles.json', 'r', encoding='utf-8') as file:
+    with open(filename, encoding='utf-8') as file:
         art_list = json.load(file)
 
     try:
